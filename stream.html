@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      #videostream{
+        width: 100%;
+        height: 100%;
+        transform: rotate(-180deg);
+      }
+      body{
+        padding: 0;
+        margin: 0
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="videostream"></canvas>
+    <script>
+       var loc = window.location, new_uri;
+       loc.protocol === "https:" ? new_uri = "wss:" : new_uri = "ws:";
+       new_uri += "//" + loc.host + loc.pathname
+       var canvas = document.getElementById('videostream');
+       var canvasContext = canvas.getContext('2d');
+       var token = '0YE07uoK27jNBq92tHADQmw/CS0ayGkk5Ocnjq4+gto=';
+       var ws = new WebSocket(new_uri);
+       ws.onopen = function(){
+           ws.send(token);
+       };
+       ws.onmessage = function(data){
+           try{
+               var img = new Image();
+               img.src = 'data:image/jpeg;base64,' + data.data;
+               img.onload = function(){
+                   canvasContext.height = img.height;
+                   canvasContext.width = img.width;
+                   canvasContext.drawImage(img, 0,0, canvasContext.width, canvasContext.height,
+                                           0,0, canvas.width, canvas.height);
+               };
+           }
+           catch(err){
+           }
+       };
+    </script>
+  </body>
+</html>
