@@ -1,4 +1,4 @@
-"user strict";
+'user strict';
 
 const http = require('http'),
       url = require('url'),
@@ -62,13 +62,6 @@ var server = http.createServer(function(req, res){
                 .catch(function(err){
                     res.end();
                 });
-	    // rpi.raspistill(args, function(data){
-	    //     imageCache = new Buffer(data.length);
-	    //     data.copy(imageCache);
-	    //     res.write(data);
-	    //     res.end();
-            //     piLock = false;
-	    // });
 	}
     }
     else if (path == '/'){
