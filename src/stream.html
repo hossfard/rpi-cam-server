@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset='utf-8'>
     <style>
       #videostream{
         width: 100%;
@@ -17,11 +18,11 @@
     <canvas id="videostream"></canvas>
     <script>
        var loc = window.location, new_uri;
-       loc.protocol === "https:" ? new_uri = "wss:" : new_uri = "ws:";
-       new_uri += "//" + loc.host + loc.pathname
+       loc.protocol === 'https:' ? new_uri = 'wss:' : new_uri = 'ws:';
+       new_uri += '//' + loc.host + loc.pathname
        var canvas = document.getElementById('videostream');
        var canvasContext = canvas.getContext('2d');
-       var token = '0YE07uoK27jNBq92tHADQmw/CS0ayGkk5Ocnjq4+gto=';
+       var token = '{{AUTH_KEY}}';
        var ws = new WebSocket(new_uri);
        ws.onopen = function(){
            ws.send(token);

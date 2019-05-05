@@ -3,12 +3,10 @@
 const http = require('http'),
       url = require('url'),
       fs = require('fs'),
-      rpi = require('./rpi');
+      path = require('path'),
+      rpi = require('./rpi'),
+      config = require('./config').config;
 
-
-const USERNAME = Buffer('admin').toString('base64');     // YWRtaW4=
-const PASSWORD = Buffer('LSK*(3hnB').toString('base64'); // TFNLKigzaG5C
-const PORT = 8080;
 
 var imageCache = new Buffer(1);
 var piLock = false;
@@ -17,21 +15,21 @@ var piLock = false;
 
 var server = http.createServer(function(req, res){
     req.requrl = url.parse(req.url, true);
-    var path = req.requrl.pathname;
+    var pathname = req.requrl.pathname;
 
     // Validate username and password
     var query = req.requrl.query;
-    if ((query.u != USERNAME) || (query.p != PASSWORD)){
+    if ((query.u != config.username) || (query.p != config.password)){
 	res.writeHead(403, {
 	    'Content-Type': 'text/html'
 	});
-	res.end();
+	res.end('403');
 	console.log('rejecting bad auth from ' + req.connection.remoteAddress);
 	console.log(req.headers);
 	return;
     }
 
-    if (path == '/pi.jpg'){
+    if (pathname == '/pi.jpg'){
         /* Raspistill flags
          *  -vf -hf: flip vertically and horizontally, respectively
          *  -w 640 -h 480: 640x480px image width,height
@@ -64,14 +62,18 @@ var server = http.createServer(function(req, res){
                 });
 	}
     }
-    else if (path == '/'){
-	var index = fs.readFileSync('index.html');
+    else if (pathname == '/'){
+	var index = fs.readFileSync(path.join(__dirname, 'index.html'));
+        index = index.toString();
+        index = index.replace(/{{USERNAME}}/g, config.username);
+        index = index.replace(/{{PASSWORD}}/g, config.password);
 	res.writeHead(200, {'Content-Type': 'text/html'});
 	res.write(index);
 	res.end();
     }
-    else if (path == '/stream'){
-	var c = fs.readFileSync('stream.html');
+    else if (pathname == '/stream'){
+	var c = fs.readFileSync('stream.html').toString();
+        c = c.replace(/{{AUTH_KEY}}/g, config.authkey);
 	res.writeHead(200, {'Content-Type': 'text/html'});
 	res.end(c);
     }
@@ -79,9 +81,8 @@ var server = http.createServer(function(req, res){
 });
 
 
-const AUTHKEY = '0YE07uoK27jNBq92tHADQmw/CS0ayGkk5Ocnjq4+gto=';
-const ws = rpi.openSocketStream(server, '/stream', AUTHKEY);
+const ws = rpi.openSocketStream(server, '/stream', config.authkey);
 
-server.listen(PORT, function(){
-    console.log('127.0.0.1:' + PORT + '/?u=' + USERNAME + '&p=' + PASSWORD);
+server.listen(config.port, function(){
+    console.log('127.0.0.1:' + config.port + '/?u=' + config.username + '&p=' + config.password);
 });
