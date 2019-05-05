@@ -1,10 +1,6 @@
 # Synopsis
 
-Minimal HTTP server for hosting
-
-Username and password are hardcoded in the server file that must be
-passed as query strings to the server. For websocket, client is also
-expected to pass to authenticate to avoid being disconnected.
+Minimal RPI cam server using node.js.
 
 The different methods for serving content is provided:
 
@@ -17,6 +13,18 @@ The different methods for serving content is provided:
 
 # Usage
 
+For websLinux virtual video device node must also be
+loaded. Specifically, server runs `ffmpeg` on input node
+`/dev/video0`.
+
+For actual streaming, the video stream will be grabbed from
+`/dev/videoX`. If the virtual device does not show up, load the
+`bcm2835-v4l2` device driver module:
+
+```bash
+# modprobe bcm2835-v4l2
+```
+
 1. Start server on server
    ```bash
    node server
@@ -28,6 +36,8 @@ The different methods for serving content is provided:
    - Open websocket to `ws://HOST:PORT/stream?u=USERNAME&p=PASSWORD`,
      and send authentication token on connect
 
+`USERNAME`, `PASSWORD`, and `PORT` are specified in `config.js`.
+
 # Requirements
 
 In addition to the node modules dependencies, following packages are
@@ -35,11 +45,3 @@ expected to be installed
 
 - `raspistill` (for images)
 - `ffmpeg` (for streaming)
-
-For websLinux virtual video device node must also be
-loaded. Specifically, server runs `ffmpeg` on input node
-`/dev/video0`.
-
-```bash
-modprobe bcm2835-v4l2
-```
