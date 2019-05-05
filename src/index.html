@@ -18,19 +18,20 @@
     <img id="dimage" src="/pi.jpg?u={{USERNAME}}&p={{PASSWORD}}">
     <script>
       var dom = document.getElementById('dimage');
+      var imgSrc = dom.src;
       var updating = false;
       function updateImage(){
         if (!updating){
           var req = new XMLHttpRequest();
           var r = parseInt(Math.random()*100);
           updating = true
-          req.open('GET', '/pi.jpg?u={{USERNAME}}&p={{PASSWORD}}' + r, true);
+          req.open('GET', imgSrc + '&cb='' + r, true);
           req.responseType = 'arraybuffer';
           req.onload = function(e){
             var arr = new Uint8Array(this.response);
             var raw = String.fromCharCode.apply(null, arr);
             var b64 = btoa(raw);
-            dom.src = "data:image/jpeg;base64," + b64;
+            dom.src = 'data:image/jpeg;base64,' + b64;
             updating = false;
           }
           req.send();
