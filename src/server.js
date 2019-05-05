@@ -94,6 +94,13 @@ var server = http.createServer(function(req, res){
 	res.writeHead(200, {'Content-Type': 'text/html'});
 	res.end(c);
     }
+    else{
+	res.writeHead(404, {
+	    'Content-Type': 'text/html'
+	});
+	res.end('404');
+        return;
+    }
 
 });
 
