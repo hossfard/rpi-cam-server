@@ -25,7 +25,7 @@
           var req = new XMLHttpRequest();
           var r = parseInt(Math.random()*100);
           updating = true
-          req.open('GET', imgSrc + '&cb='' + r, true);
+          req.open('GET', imgSrc + '&cb=' + r, true);
           req.responseType = 'arraybuffer';
           req.onload = function(e){
             var arr = new Uint8Array(this.response);
