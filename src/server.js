@@ -13,11 +13,7 @@ var piLock = false;
 
 // https://URL:PORT/?u=YWRtaW4=&p=TFNLKigzaG5C
 
-var server = http.createServer(function(req, res){
-    req.requrl = url.parse(req.url, true);
-    var pathname = req.requrl.pathname;
-
-    // Validate username and password
+function authenticate(req, res){
     var query = req.requrl.query;
     if ((query.u != config.username) || (query.p != config.password)){
 	res.writeHead(403, {
@@ -26,10 +22,23 @@ var server = http.createServer(function(req, res){
 	res.end('403');
 	console.log('rejecting bad auth from ' + req.connection.remoteAddress);
 	console.log(req.headers);
-	return;
+        return false;
     }
+    return true;
+}
+
+var server = http.createServer(function(req, res){
+    req.requrl = url.parse(req.url, true);
+    var pathname = req.requrl.pathname;
+
+    // Validate username and password
+    var query = req.requrl.query;
 
     if (pathname == '/pi.jpg'){
+        if (! authenticate(req, res)){
+            return;
+        }
+
         /* Raspistill flags
          *  -vf -hf: flip vertically and horizontally, respectively
          *  -w 640 -h 480: 640x480px image width,height
@@ -63,6 +72,10 @@ var server = http.createServer(function(req, res){
 	}
     }
     else if (pathname == '/'){
+        if (! authenticate(req, res)){
+            return;
+        }
+
 	var index = fs.readFileSync(path.join(__dirname, 'index.html'));
         index = index.toString();
         index = index.replace(/{{USERNAME}}/g, config.username);
@@ -72,6 +85,10 @@ var server = http.createServer(function(req, res){
 	res.end();
     }
     else if (pathname == '/stream'){
+        if (! authenticate(req, res)){
+            return;
+        }
+
 	var c = fs.readFileSync('stream.html').toString();
         c = c.replace(/{{AUTH_KEY}}/g, config.authkey);
 	res.writeHead(200, {'Content-Type': 'text/html'});
