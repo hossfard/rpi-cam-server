@@ -3,11 +3,11 @@
 const spawn = require('child_process').spawn;
 
 
-/*! Call raspistill, and return output
+/** Call raspistill, and return output
  *
- * @args arguments to pass to raspistill, space separated
- * @cb callback called with stdout results (Buffer) once process
- *     completes
+ * @param {String} args space separated arguments to pass to raspistill
+ * @param {Function} cb callback called with stdout results (Buffer)
+ *     once process completes
  */
 exports.raspistill = function(args, cb){
     // flags must be passed as an array to spawn
@@ -56,15 +56,15 @@ exports.raspistillp = function(args){
 };
 
 
-/* Open a websocket stream at '/path' on http 'server'
+/** Open a websocket stream at '/path' on http 'server'
  *
  * Clients are expected to send 'authKey' within 1 second of connecting
  * to authenticate, otherwise it is disconnected
  *
- * @server http server
- * @path path for websocket to listen on
- * @authKey authentication key clients are expected to authenticate with
- *
+ * @param {Http.Server} server http module server object
+ * @param {String} path for websocket to listen on
+ * @param {String} authKey authentication key clients are expected to
+ *        authenticate with
  */
 exports.openSocketStream = function(server, path, authKey){
     const WebSocket = require('ws');
