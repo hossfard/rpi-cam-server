@@ -25,18 +25,23 @@ For actual streaming, the video stream will be grabbed from
 # modprobe bcm2835-v4l2
 ```
 
-1. Start server on server
+1. Install single depedency
    ```bash
-   node server
+   npm install
    ```
-2. Client-side: different options
+2. Update `config.js` as necessary
+3. Start server on server
+   ```bash
+   node src/server
+   ```
+4. Client-side: different options
    - Open `http://HOST:PORT/?u=USERNAME&p=PASSWORD` in browser
    - Open `http://HOST:PORT/stream?u=USERNAME&p=PASSWORD` in browser
    - Send GET request to `http://HOST:PORT/pi.jpg?u=USERNAME&p=PASSWORD`
-   - Open websocket to `ws://HOST:PORT/stream?u=USERNAME&p=PASSWORD`,
-     and send authentication token on connect
+   - Open websocket to `ws://HOST:PORT/stream`, and send
+     authentication token (fixed string) on connect
 
-`USERNAME`, `PASSWORD`, and `PORT` are specified in `config.js`.
+ `USERNAME`, `PASSWORD`, and `PORT` are specified in `config.js`.
 
 # Requirements
 
