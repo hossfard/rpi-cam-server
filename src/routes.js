@@ -37,7 +37,7 @@ var PI_LOCK = false;
  * username and password as query paramters in each call.
  *
  * @example {bash} Get latest image
- *   curl -i -X GET http://localhost/pi.jpg?u=<username>&p=<password>
+ *   curl -i -X GET "http://localhost/pi.jpg?u=<username>&p=<password>"
  *
  * @param req {Http.Request} request object
  * @param res {Http.Response} response object
