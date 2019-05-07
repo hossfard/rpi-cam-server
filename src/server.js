@@ -2,97 +2,18 @@
 
 const http = require('http'),
       url = require('url'),
-      fs = require('fs'),
-      path = require('path'),
       rpi = require('./rpi'),
-      config = require('./config').config;
-
-
-var imageCache = new Buffer(1);
-var piLock = false;
+      routes = require('./routes'),
+      config = require('../config').config;
 
 // https://URL:PORT/?u=YWRtaW4=&p=TFNLKigzaG5C
-
-function authenticate(req, res){
-    var query = req.requrl.query;
-    if ((query.u != config.username) || (query.p != config.password)){
-	res.writeHead(403, {
-	    'Content-Type': 'text/html'
-	});
-	res.end('403');
-	console.log('rejecting bad auth from ' + req.connection.remoteAddress);
-	console.log(req.headers);
-        return false;
-    }
-    return true;
-}
 
 var server = http.createServer(function(req, res){
     req.requrl = url.parse(req.url, true);
     var pathname = req.requrl.pathname;
 
-    // Validate username and password
-    var query = req.requrl.query;
-
-    if (pathname == '/pi.jpg'){
-        if (! authenticate(req, res)){
-            return;
-        }
-
-        /* Raspistill flags
-         *  -vf -hf: flip vertically and horizontally, respectively
-         *  -w 640 -h 480: 640x480px image width,height
-         *  -rot 90: rotate by 90 degrees
-         *  -t 800: take picture after 800ms
-         *  -o -: write to stdout
-         */
-	var args = '-vf -hf -w 640 -h 480 -rot 90 -t 800 -o -';
-	res.writeHead(200, {
-	    'Content-Type': 'image/png'
-	});
-
-	// If camera is already in use, use cached image
-	if (piLock){
-	    res.write(imageCache);
-            res.end();
-	}
-	else{
-            piLock = true;
-            rpi.raspistillp(args)
-                .then(function(data){
-		    imageCache = new Buffer(data.length);
-		    data.copy(imageCache);
-		    res.write(data);
-		    res.end();
-                    piLock = false;
-                })
-                .catch(function(err){
-                    res.end();
-                });
-	}
-    }
-    else if (pathname == '/'){
-        if (! authenticate(req, res)){
-            return;
-        }
-
-	var index = fs.readFileSync(path.join(__dirname, 'index.html'));
-        index = index.toString();
-        index = index.replace(/{{USERNAME}}/g, config.username);
-        index = index.replace(/{{PASSWORD}}/g, config.password);
-	res.writeHead(200, {'Content-Type': 'text/html'});
-	res.write(index);
-	res.end();
-    }
-    else if (pathname == '/stream'){
-        if (! authenticate(req, res)){
-            return;
-        }
-
-	var c = fs.readFileSync('stream.html').toString();
-        c = c.replace(/{{AUTH_KEY}}/g, config.authkey);
-	res.writeHead(200, {'Content-Type': 'text/html'});
-	res.end(c);
+    if (pathname in routes){
+        routes[pathname](req, res);
     }
     else{
 	res.writeHead(404, {
@@ -101,12 +22,11 @@ var server = http.createServer(function(req, res){
 	res.end('404');
         return;
     }
-
 });
 
 
-const ws = rpi.openSocketStream(server, '/stream', config.authkey);
+const ws = rpi.openSocketStream(server, '/stream', config.ws_authkey);
 
 server.listen(config.port, function(){
-    console.log('127.0.0.1:' + config.port + '/?u=' + config.username + '&p=' + config.password);
+    console.log('127.0.0.1:' + config.port);
 });
