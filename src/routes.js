@@ -5,14 +5,22 @@ const fs = require('fs'),
       rpi = require('./rpi'),
       config = require('../config').config;
 
-
+/** Authenticate request
+ *
+ * Check if request is authenticated. If authentication is invalid,
+ * sends 403 response
+ *
+ * @param req {Http.Request} HTTP Request object
+ * @param res {Http.Response} HTTP Response object
+ * @return {bool} true if authenticated, false otherwise
+ */
 function authenticate(req, res){
     var query = req.requrl.query;
-    if ((query.u != config.username) || (query.p != config.password)){
+    if ((query.u !== config.username) || (query.p !== config.password)){
 	res.writeHead(403, {
 	    'Content-Type': 'text/html'
 	});
-	res.end('403');
+	res.end('Authentication required');
         return false;
     }
     return true;
@@ -108,10 +116,9 @@ routes['/'] = function(req, res){
  * @return {Undefined} None
  */
 routes['/stream'] = function(req, res){
-    if (! authenticate(req, res)){
+    if (!authenticate(req, res)){
         return;
     }
-
     var c = fs.readFileSync('stream.html').toString();
     c = c.replace(/{{AUTH_KEY}}/g, config.authkey);
     res.writeHead(200, {'Content-Type': 'text/html'});
