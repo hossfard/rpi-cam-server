@@ -24,6 +24,18 @@ var routes = {};
 var IMAGE_CACHE = new Buffer(1);
 var PI_LOCK = false;
 
+/** Capture or get latest camera image
+ *
+ * Capture or get latest camera image. Must authenticate by sending
+ * username and password as query paramters in each call.
+ *
+ * @example {bash} Get latest image
+ *   curl -i -X GET http://localhost/pi.jpg?user=<username>&password=<password>
+ *
+ * @param req {Http.Request} request object
+ * @param res {Http.Response} response object
+ * @return {Undefined} None
+ */
 routes['/pi.jpg'] = function(req, res){
     if (!authenticate(req, res)){
         return;
@@ -63,6 +75,15 @@ routes['/pi.jpg'] = function(req, res){
 };
 
 
+/** Index page showing RPI image
+ *
+ * Must authenticate by sending username and password along query
+ * parameters
+ *
+ * @param req {Http.Request} request object
+ * @param res {Http.Response} response object
+ * @return {Undefined} None
+ */
 routes['/'] = function(req, res){
     if (!authenticate(req, res)){
         return;
@@ -78,6 +99,15 @@ routes['/'] = function(req, res){
 };
 
 
+/** HTML page with an embedded stream
+ *
+ * Must authenticate by sending username and password along query
+ * parameters
+ *
+ * @param req {Http.Request} request object
+ * @param res {Http.Response} response object
+ * @return {Undefined} None
+ */
 routes['/stream'] = function(req, res){
     if (! authenticate(req, res)){
         return;
