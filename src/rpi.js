@@ -7,7 +7,7 @@ const spawn = require('child_process').spawn;
  *
  * @param {String} args space separated arguments to pass to raspistill
  * @param {Function} cb callback called with stdout results (Buffer)
- *     once process completes
+ *                      once process completes
  */
 exports.raspistill = function(args, cb){
     // flags must be passed as an array to spawn
@@ -83,14 +83,12 @@ exports.openSocketStream = function(server, path, authKey){
         // If socekt doens't send authentication key within 1 second, disconnect it
         setTimeout(function(){
             if (!socket.auth){
-                console.log('Socket ' + socket.id + ' failed to authenticate. Disconnecting.');
                 socket.close();
             }
         }, 1000);
 
         // Expect an authentication key
         socket.on('message', function(data){
-            console.log(data);
             if (data == authKey){
                 socket.auth = true;
             }
@@ -117,16 +115,15 @@ exports.openSocketStream = function(server, path, authKey){
             });
 
             FFMPEG.on('close', function (code) {
-                console.log('ffmpeg exited with code ' + code);
+
             });
 
             FFMPEG.stderr.on('data', function (data) {
-                // console.log('stderr: ' + data);
+
             });
         }
 
         socket.on('close', function(){
-            console.log('CLOSED');
             if (wss.clients.size == 0){
                 FFMPEG.kill();
                 FFMPEG = '';

@@ -13,8 +13,6 @@ function authenticate(req, res){
 	    'Content-Type': 'text/html'
 	});
 	res.end('403');
-	console.log('rejecting bad auth from ' + req.connection.remoteAddress);
-	console.log(req.headers);
         return false;
     }
     return true;
@@ -24,13 +22,14 @@ var routes = {};
 var IMAGE_CACHE = new Buffer(1);
 var PI_LOCK = false;
 
+
 /** Capture or get latest camera image
  *
  * Capture or get latest camera image. Must authenticate by sending
  * username and password as query paramters in each call.
  *
  * @example {bash} Get latest image
- *   curl -i -X GET http://localhost/pi.jpg?user=<username>&password=<password>
+ *   curl -i -X GET http://localhost/pi.jpg?u=<username>&p=<password>
  *
  * @param req {Http.Request} request object
  * @param res {Http.Response} response object
