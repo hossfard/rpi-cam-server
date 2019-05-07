@@ -1,8 +1,15 @@
 # Synopsis
 
-Minimal RPI cam server using node.js. See the simple [cam view
+Minimal RPI camera server using node.js. See the simple [cam view
 repo](https://github.com/hossfard/rpi-cam-view) for
 streaming/displaying the camera on your device.
+
+# Requirements
+
+* Node.js
+* npm
+* `raspistill` (for images)
+* `ffmpeg` (for streaming)
 
 # Usage
 
@@ -11,14 +18,14 @@ loaded. Specifically, server runs `ffmpeg` on input node
 `/dev/video0`.
 
 For actual streaming, the video stream will be grabbed from
-`/dev/videoX`. If the virtual device does not show up, load the
+`/dev/video<X>`. If the virtual device does not show up, load the
 `bcm2835-v4l2` device driver module:
 
 ```bash
-# modprobe bcm2835-v4l2
+sudo modprobe bcm2835-v4l2
 ```
 
-1. Install single depedency
+1. Install the only depedency (needed if "streaming")
    ```bash
    npm install
    ```
@@ -27,7 +34,7 @@ For actual streaming, the video stream will be grabbed from
    ```bash
    node src/server
    ```
-4. Client-side: different options
+4. Then there are different options on the client machine:
    - Open `http://HOST:PORT/?u=USERNAME&p=PASSWORD` in browser.
    - Open `http://HOST:PORT/stream?u=USERNAME&p=PASSWORD` in browser.
    - Send `GET` request to
@@ -36,12 +43,4 @@ For actual streaming, the video stream will be grabbed from
    - Open a websocket connection to `ws://HOST:PORT/stream`, and send
      authentication token (fixed string) on connect.
 
- `USERNAME`, `PASSWORD`, and `PORT` are specified in `config.js`.
-
-# Requirements
-
-In addition to the node module dependencies, following packages are
-expected to be installed
-
-- `raspistill` (for images)
-- `ffmpeg` (for streaming)
+`USERNAME`, `PASSWORD`, and `PORT` are specified in `config.js`.
